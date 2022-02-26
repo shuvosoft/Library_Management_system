@@ -58,11 +58,13 @@ import App from './App.vue'
 import router from './router'
 import store from './store'
 import Pagination from "v-pagination-3";
+import Select2 from 'vue3-select2-component';
 
 const app = createApp(App);
 app.use(store);
 app.use(router);
 app.component("pagination", Pagination);
+app.component('Select2', Select2)
 app.mount("#app");
 
 // createApp(App).use(store).use(router).mount("#app");

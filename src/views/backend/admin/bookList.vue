@@ -4,11 +4,21 @@
       <div class="card-header">
         <h4 class="card-title">Book List</h4>
       </div>
+
       <div class="card-body">
+        <div class="input-group search-area">
+          <input type="text" class="form-control" @keyup="search($event.target.value)" placeholder="Search ..." style="background: palegoldenrod;">
+          <span class="input-group-text"><a ><i class="flaticon-381-search-2"></i></a></span>
+          <button v-if="selected_data.length > 0" @click.prevent="delete_multiple()" class="btn btn-success mb-2" style="margin: -2px 95px;">Delete Selected ( {{ selected_data.length }} )</button>
+        </div>
+
         <div class="table-responsive">
           <table class="table primary-table-bg-hover table-bordered">
             <thead>
             <tr>
+              <th>
+                <input type="checkbox"  @click="check_all()" id="check_all" class="form-check"/>
+              </th>
               <th>#</th>
               <th>Image</th>
               <th>Book Name</th>
@@ -18,8 +28,24 @@
             </tr>
             </thead>
             <tbody>
-            <tr v-for="(book,imdex) in book_list.data" :key="book.id">
-              <th>{{imdex}}</th>
+            <tr v-for="(book,index) in book_list.data" :key="book.id">
+              <td>
+<!--                <input type="checkbox" @change="add_to_selected(book.id)" class="form-check"/>-->
+                <input
+                    v-if="selected_data.includes(book.id)"
+                    checked
+                    type="checkbox"
+                    @change="add_to_selected(book.id)"
+                    class="form-check"
+                />
+                <input
+                    v-else
+                    type="checkbox"
+                    @change="add_to_selected(book.id)"
+                    class="form-check"
+                />
+              </td>
+              <td>{{index}}</td>
 
               <td>
                 <img
@@ -77,6 +103,8 @@ export default {
       page: 1,
       per_page: 0,
       total: 0,
+      search_key: "",
+      selected_data: [],
     }
   },
   created: function () {
@@ -86,7 +114,9 @@ methods:{
   //Show all Book List-----------------
   getData(page = 1) {
     let url = `/book-list?page= ${page}`;
-
+    if (this.search_key.length > 0) {   //this condition only for search
+      url += `&key=${this.search_key}`;
+    }
     window.axios.get(url).then((res) => {
       // console.log(res.data);
       this.book_list = res.data;
@@ -106,6 +136,47 @@ methods:{
         this.getData();
       });
     }
+  },
+
+// Start  Multi select Delete using check box---------------
+
+  add_to_selected: function (id) {
+    this.selected_data.includes(id)
+        ? (this.selected_data = this.selected_data.filter((item) => item != id))
+        : this.selected_data.push(id);
+
+    console.log(this.selected_data);
+  },
+  check_all(){
+    this.book_list.data.map((item) => {
+      this.selected_data.includes(item.id)
+          ? (this.selected_data = this.selected_data.filter(
+              (item2) => item2 != item.id
+          ))
+          : this.selected_data.push(item.id);
+
+      return 0;
+    });
+  },
+  delete_multiple(){
+    let con = confirm("sure want to delete??");
+    if (con) {
+      window.axios
+          .post("/book-list/delete-multi", { ids: this.selected_data })
+          .then((res) => {
+            console.log(res.data);
+            this.selected_data = [];
+            this.getData();
+            window.$("#check_all").prop("checked", false);
+          });
+    }
+  },
+// end Multi select Delete using check box ---------------------------
+// Search ................
+  search(key){
+    console.log(key)
+    this.search_key = key;
+    this.getData();
   }
 },
   computed:{
