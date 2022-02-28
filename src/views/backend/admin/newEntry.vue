@@ -66,9 +66,9 @@
 
 <script>
 export default {
-  name: "newEntry",
-  data(){
-    return{
+  name: "new-entry",
+  data: function () {
+    return {
       myValue: "",
       myBooksValue: "",
       // myOptions: ["op1", "op2", "op3"],
@@ -77,50 +77,53 @@ export default {
       time:'',
       date: '',
       return_date:'',
-    }
+    };
   },
-  created() {
+  created: function(){
     this.getData();
   },
   methods: {
-    getData(){
+    getData: function () {
       window.axios.get('/user/user-list-for-select2')
-      .then((res)=>{
-        this.myOptions = res.data;
-      })
+          .then(res=>{
+            this.myOptions = res.data;
+          })
       window.axios.get('/book-list/book-list-for-select2')
-      .then((res)=>{
-        this.book_list_option = res.data;
-      })
+          .then(res=>{
+            console.log(res.data);
+            this.book_list_option = res.data;
+          })
     },
-    myChangeEvent(val){
-      console.log(val);
+    myChangeEvent: function () {
+      // console.log(val);
     },
-    mySelectEvent({id, text}){
-      console.log({id, text})
+    mySelectEvent: function () {
+      // console.log({ id, text }, this.myValue);
     },
-    myBookChangeEvent(val){
-      console.log(val);
+
+    myBookChangeEvent: function () {
+      // console.log(val);
     },
-    myBookSelectEvent({id, text}){
-      console.log({id, text})
+    myBookSelectEvent: function () {
+      // console.log({ id, text }, this.myBooksValue);
     },
-    saveEntry(){
+    saveEntry: function(){
       let form_data = {
-            user_id: this.myValue,
-            book_ids: this.myBooksValue,
-            date: this.date,
-            return_date: this.return_date,
-            time: this.time,
+        user_id: this.myValue,
+        book_ids: this.myBooksValue,
+        date: this.date,
+        return_date: this.return_date,
+        time: this.time,
       }
+
       window.axios.post('/book-entry/create',form_data)
           .then(res=>{
             console.log(res.data);
-            // this.myBooksValue = [];
+            this.myBooksValue = [];
           })
     }
   },
-}
+};
 </script>
 
 <style scoped>

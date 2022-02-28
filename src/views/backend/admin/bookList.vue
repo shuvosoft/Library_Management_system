@@ -118,7 +118,7 @@ methods:{
       url += `&key=${this.search_key}`;
     }
     window.axios.get(url).then((res) => {
-      // console.log(res.data);
+      console.log(res.data);
       this.book_list = res.data;
       this.total = res.data.total;
       this.per_page = res.data.per_page;
@@ -178,6 +178,7 @@ methods:{
     this.search_key = key;
     this.getData();
   }
+// End Search ................
 },
   computed:{
     ...mapGetters(["get_server_url"]),
